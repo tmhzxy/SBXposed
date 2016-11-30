@@ -1,5 +1,23 @@
 apply plugin: 'com.android.application'
 
+import java.util.regex.Pattern
+task('increaseVersionCode') << {
+    def buildFile = file("build.gradle")
+    def pattern = Pattern.compile("versionCode\\s+(\\d+)")
+    def manifestText = buildFile.getText()
+    def matcher = pattern.matcher(manifestText)
+    matcher.find()
+    def versionCode = Integer.parseInt(matcher.group(1))
+    def manifestContent = matcher.replaceAll("versionCode " + ++versionCode)
+    buildFile.write(manifestContent)
+}
+
+tasks.whenTaskAdded { task ->
+    if (task.name == 'generateReleaseBuildConfig') {
+        task.dependsOn 'increaseVersionCode'
+    }
+}
+
 android {
     signingConfigs {
     }
@@ -9,7 +27,7 @@ android {
         applicationId "tmh.sbxposed"
         minSdkVersion 19
         targetSdkVersion 19
-        versionCode 3
+        versionCode 6
         versionName "1.0"
     }
     buildTypes {
