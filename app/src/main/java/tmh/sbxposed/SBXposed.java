@@ -42,7 +42,8 @@ public class SBXposed implements IXposedHookLoadPackage {
     @Override
     public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam packageParam) throws Throwable {
         if (packageParam.packageName.equals("com.starfinanz.smob.android.sbanking") ||
-            packageParam.packageName.equals("com.starfinanz.smob.android.sfinanzstatus")) {
+            packageParam.packageName.equals("com.starfinanz.smob.android.sfinanzstatus") ||
+            packageParam.packageName.equals("com.starfinanz.smob.android.sfinanzstatus.tablet")) {
             for (String foundClassName : getFoundClasses(packageParam.appInfo.sourceDir)) {
                 Class foundClass = findClass(foundClassName, packageParam.classLoader);
                 if (foundClass != null) {
