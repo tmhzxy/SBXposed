@@ -19,7 +19,7 @@ public class SBXposed implements IXposedHookLoadPackage {
 
     private static ArrayList<String> getFoundClasses(String sourceDir) {
         if (foundClasses.size() == 0) {
-            XposedBridge.log("SBXposed: Try to find protect classes...");
+            log("Try to find protect classes...");
             try {
                 DexFile df = new DexFile(sourceDir);
                 for (Enumeration<String> iteration = df.entries(); iteration.hasMoreElements(); ) {
@@ -30,13 +30,27 @@ public class SBXposed implements IXposedHookLoadPackage {
                 }
                 df.close();
             } catch (Exception e) {
+                log("EXCEPTION - START");
                 XposedBridge.log(e);
+                log("EXCEPTION - END");
             } finally {
-                XposedBridge.log("SBXposed: " + foundClasses.size() + " classes found.");
+                log(foundClasses.size() + " classes found.");
             }
         }
 
         return foundClasses;
+    }
+
+    private static void log(String message) {
+        log(message, false);
+    }
+
+    private static void log(String message, boolean debug) {
+        if (debug && !BuildConfig.DEBUG) {
+            return;
+        }
+
+        XposedBridge.log("SBXposed: " + message);
     }
 
     @Override
@@ -44,6 +58,7 @@ public class SBXposed implements IXposedHookLoadPackage {
         if (packageParam.packageName.equals("com.starfinanz.smob.android.sbanking") ||
             packageParam.packageName.equals("com.starfinanz.smob.android.sfinanzstatus") ||
             packageParam.packageName.equals("com.starfinanz.smob.android.sfinanzstatus.tablet")) {
+            log("Supported app found: " + packageParam.packageName + " [" + packageParam.processName + "]");
             for (String foundClassName : getFoundClasses(packageParam.appInfo.sourceDir)) {
                 Class foundClass = findClass(foundClassName, packageParam.classLoader);
                 if (foundClass != null) {
@@ -52,19 +67,21 @@ public class SBXposed implements IXposedHookLoadPackage {
                         if (method.getParameterTypes().length == 0 &&
                             method.getReturnType() == boolean.class) {
                             hookableMethodFound = true;
+                            log("Hook " + foundClassName + "->" + method.getName(), true);
                             findAndHookMethod(foundClassName, packageParam.classLoader, method.getName(), new XC_MethodHook() {
                                 @Override
                                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                                    log(param.method.getName() + " called.", true);
                                     param.setResult(true);
                                 }
                             });
                         }
                     }
                     if (!hookableMethodFound) {
-                        XposedBridge.log("SBXposed: Could not hook any method in class: " + foundClassName);
+                        log("Could not hook any method in class: " + foundClassName);
                     }
                 } else {
-                    XposedBridge.log("SBXposed: Could not get class for: " + foundClassName);
+                    log("Could not get class for: " + foundClassName);
                 }
             }
         }
