@@ -3,8 +3,11 @@ A small Xposed module which allow to avoid Xposed detection in Sparkasse(+).
 
 ## Requirements
 - Xposed Framework
-- Sparkasse / Sparkasse+ app at least version 3.0+
+- Sparkasse / Sparkasse+ app at least version **3.0.0**
 - Android 4.4+
+
+Module is currently not working with latest app version. Only 3.0.0 is working with already created database.
+The next release of module will remove Kwitt functions, since use with Xposed is not legal.
 
 ## Usage
 1. Install SBXposed
@@ -26,6 +29,12 @@ In general, however, the module should work for the same app version.
 
 Issues / Questions: http://forum.xda-developers.com/xposed/modules/mod-sbxposed-t3510003
 
+Please contribute and get that app running for us!
+
 ## Changelog
 - 1.0: Initial module.
 - 1.1: Fix min. XposedBridge version to 53 for Kitkat.
+
+## Missing for next release...
+- Removal of Kwitt functions
+- Many checks in app... :(
